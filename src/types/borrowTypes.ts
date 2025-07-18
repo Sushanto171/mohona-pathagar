@@ -1,7 +1,11 @@
 export interface BorrowSummary {
-  id: string;
+  _id: string;
   title: string;
   isbn: string;
   totalBorrowed: number;
 }
 
+export interface BorrowInput{
+  _id: string,
+  title: string,
+}

@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { Book } from "@/types/bookTypes";
+import { useAppSelector } from "@/redux/hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -31,6 +31,7 @@ import {
   SelectValue,
 } from "./ui/select";
 import { Textarea } from "./ui/textarea";
+import { updateBookSelector } from "@/redux/features/book/bookSlice";
 
 const formSchema = z.object({
   title: z
@@ -52,17 +53,8 @@ const formSchema = z.object({
   copies: z.number().min(1, { message: "Copies must be at least 1" }),
 });
 
-const book: Book = {
-  title: "Atomic Habits",
-  author: "James Clear",
-  genre: "FANTASY",
-  isbn: "978-0735211292",
-  copies: 0,
-  available: false,
-  description: "",
-  _id: "s",
-};
 export function UpdateBookModal() {
+  const book = useAppSelector(updateBookSelector);
   const navigate = useNavigate();
   const [open, setOpen] = useState(true);
   const form = useForm<z.infer<typeof formSchema>>({

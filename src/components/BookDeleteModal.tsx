@@ -8,13 +8,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { deleteBookSelector } from "@/redux/features/book/bookSlice";
+import { useAppSelector } from "@/redux/hooks";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
 export function BookDeleteModal() {
+  const book = useAppSelector(deleteBookSelector);
   const navigate = useNavigate();
   const [open, setOpen] = useState(true);
   const deleteHandler = () => {
+    console.log(book);
     navigate("/");
     setOpen(false);
   };
@@ -22,8 +26,10 @@ export function BookDeleteModal() {
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-primary">Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription >
+          <AlertDialogTitle className="text-primary">
+            Are you absolutely sure?
+          </AlertDialogTitle>
+          <AlertDialogDescription>
             This action cannot be undone. This will permanently delete your
             account and remove your data from our servers.
           </AlertDialogDescription>

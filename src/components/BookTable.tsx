@@ -1,3 +1,6 @@
+import { deleteBook, updateBook } from "@/redux/features/book/bookSlice";
+import { createBorrow } from "@/redux/features/borrow/borrowSlice";
+import { useAppDispatch } from "@/redux/hooks";
 import type { Book } from "@/types/bookTypes";
 import { PencilIcon } from "lucide-react";
 import { Link } from "react-router";
@@ -22,11 +25,13 @@ const dummyBooks: Book[] = [
     copies: 0,
     available: false,
     description: "",
-    _id: "s",
+    _id: "p",
   },
 ];
 
 const BookTable = () => {
+  const dispatch = useAppDispatch();
+
   return (
     <div className="overflow-x-auto rounded-md shadow">
       <table className="min-w-full bg-white dark:bg-muted border border-gray-200 dark:border-gray-700">
@@ -58,15 +63,35 @@ const BookTable = () => {
               </td>
               <td className="px-4 py-2 text-center space-x-2">
                 <Link to={`/edit-book/${book._id}`}>
-                  <Button>
+                  <Button
+                    className=""
+                    onClick={() => dispatch(updateBook(book))}
+                  >
                     <PencilIcon />
                   </Button>
                 </Link>
                 <Link to={`/delete-book/${book._id}`}>
-                  <Button>Delete</Button>
+                  <Button
+                    onClick={() => dispatch(deleteBook({ _id: book._id }))}
+                  >
+                    Delete
+                  </Button>
                 </Link>
-                <Link to={`/borrow/${book._id}`}>
-                  <Button disabled={!book.available} variant="default">
+                <Link
+                  to={book.available ? `/borrow/${book._id}` : ""}
+                  className={
+                    book.available ? "cursor-pointer" : "cursor-not-allowed"
+                  }
+                >
+                  <Button
+                    onClick={() =>
+                      dispatch(
+                        createBorrow({ _id: book._id, title: book.title })
+                      )
+                    }
+                    disabled={!book.available}
+                    variant="default"
+                  >
                     Borrow
                   </Button>
                 </Link>
