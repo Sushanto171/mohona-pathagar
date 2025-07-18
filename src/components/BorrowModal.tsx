@@ -5,7 +5,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import type { Book } from "@/types/bookTypes";
@@ -14,6 +13,7 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 import { z } from "zod";
 import { Calendar } from "./ui/calendar";
 import {
@@ -43,8 +43,20 @@ const formSchema = z.object({
   bookId: z.string(),
 });
 
-export function BorrowModal({ book }: { book: Book }) {
-  const [open, setOpen] = useState(false);
+const book: Book = {
+  title: "Atomic Habits",
+  author: "James Clear",
+  genre: "FANTASY",
+  isbn: "978-0735211292",
+  copies: 0,
+  available: false,
+  description: "",
+  _id: "s",
+};
+
+export function BorrowModal() {
+  const [open, setOpen] = useState(true);
+  const navigate = useNavigate();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -60,16 +72,15 @@ export function BorrowModal({ book }: { book: Book }) {
 
     form.reset();
     setOpen(false);
+    navigate("/");
   };
 
+  const handleModal = () => {
+    setOpen(!open);
+    navigate("/");
+  };
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button disabled={!book.available} variant="default">
-          Borrow
-        </Button>
-      </DialogTrigger>
-
+    <Dialog open={open} onOpenChange={handleModal}>
       <DialogContent className="sm:max-w-[425px] overflow-auto">
         <DialogHeader>
           <DialogTitle>Borrow A Book</DialogTitle>
@@ -149,14 +160,12 @@ export function BorrowModal({ book }: { book: Book }) {
                         mode="single"
                         selected={field.value ? field.value : undefined}
                         onSelect={field.onChange}
-                        disabled={(date) =>
-                          date > new Date() || date < new Date("1900-01-01")
-                        }
+                        disabled={(date) => date < new Date()}
                         captionLayout="dropdown"
                       />
                     </PopoverContent>
                   </Popover>
-                  <FormMessage />
+                  <FormMessage className="text-red-500 text-xs" />
                 </FormItem>
               )}
             />

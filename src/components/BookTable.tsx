@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button";
 import type { Book } from "@/types/bookTypes";
-import { BorrowModal } from "./BorrowModal";
-import { UpdateBookModal } from "./UpdateBookModal";
+import { PencilIcon } from "lucide-react";
+import { Link } from "react-router";
+import { Button } from "./ui/button";
 
 const dummyBooks: Book[] = [
   {
@@ -42,8 +42,8 @@ const BookTable = () => {
           </tr>
         </thead>
         <tbody>
-          {dummyBooks.map((book, i) => (
-            <tr key={i} className="border-t dark:border-gray-700">
+          {dummyBooks.map((book) => (
+            <tr key={book._id} className="border-t dark:border-gray-700">
               <td className="px-4 py-2">{book.title}</td>
               <td className="px-4 py-2">{book.author}</td>
               <td className="px-4 py-2">{book.genre}</td>
@@ -57,15 +57,19 @@ const BookTable = () => {
                 )}
               </td>
               <td className="px-4 py-2 text-center space-x-2">
-                {/* <Link to={`/edit-book/${i}`}> */}
-                <UpdateBookModal book={book} />
-                {/* </Link> */}
-                <Button variant="destructive" size="sm">
-                  Delete
-                </Button>
-                {/* <Link to={`/borrow/${i}`}> */}
-                <BorrowModal book={book} />
-                {/* </Link> */}
+                <Link to={`/edit-book/${book._id}`}>
+                  <Button>
+                    <PencilIcon />
+                  </Button>
+                </Link>
+                <Link to={`/delete-book/${book._id}`}>
+                  <Button>Delete</Button>
+                </Link>
+                <Link to={`/borrow/${book._id}`}>
+                  <Button disabled={!book.available} variant="default">
+                    Borrow
+                  </Button>
+                </Link>
               </td>
             </tr>
           ))}

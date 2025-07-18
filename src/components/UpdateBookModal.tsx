@@ -5,13 +5,12 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import type { Book } from "@/types/bookTypes";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PencilIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 import { z } from "zod";
 import {
   Form,
@@ -53,8 +52,19 @@ const formSchema = z.object({
   copies: z.number().min(1, { message: "Copies must be at least 1" }),
 });
 
-export function UpdateBookModal({ book }: { book: Book }) {
-  const [open, setOpen] = useState(false);
+const book: Book = {
+  title: "Atomic Habits",
+  author: "James Clear",
+  genre: "FANTASY",
+  isbn: "978-0735211292",
+  copies: 0,
+  available: false,
+  description: "",
+  _id: "s",
+};
+export function UpdateBookModal() {
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(true);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -72,16 +82,16 @@ export function UpdateBookModal({ book }: { book: Book }) {
     console.log("Updated Data:", data);
 
     form.reset();
+    if (open) return navigate("/");
+  };
+
+  const handleModal = () => {
+    setOpen(!open);
+    if (open) return navigate("/");
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="default">
-          <PencilIcon />
-        </Button>
-      </DialogTrigger>
-
+    <Dialog open={open} onOpenChange={handleModal}>
       <DialogContent className="sm:max-w-[425px] overflow-auto h-[90%]">
         <DialogHeader>
           <DialogTitle>Update Book</DialogTitle>

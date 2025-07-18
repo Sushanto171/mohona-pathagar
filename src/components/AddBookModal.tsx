@@ -5,11 +5,11 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 import { z } from "zod";
 import {
   Form,
@@ -31,7 +31,7 @@ import {
 } from "./ui/select";
 import { Textarea } from "./ui/textarea";
 
- const formSchema = z.object({
+const formSchema = z.object({
   title: z
     .string()
     .min(1, { message: "Title is required and cannot be empty" }),
@@ -52,7 +52,8 @@ import { Textarea } from "./ui/textarea";
 });
 
 export function AddBookModal() {
-  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(true);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -70,15 +71,16 @@ export function AddBookModal() {
     console.log("Submitted Data:", data);
 
     form.reset();
-    setOpen(false)
+    setOpen(false);
   };
 
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="default">Add Book</Button>
-      </DialogTrigger>
+  const handleModal=()=>{
+    setOpen(!open)
+    navigate("/")
+  }
 
+  return (
+    <Dialog open={open} onOpenChange={handleModal}>
       <DialogContent className="sm:max-w-[425px] overflow-auto h-[90%]">
         <DialogHeader>
           <DialogTitle>Add a Book</DialogTitle>
