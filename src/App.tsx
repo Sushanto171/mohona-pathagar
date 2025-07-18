@@ -1,13 +1,16 @@
 import { Outlet } from "react-router";
+import Container from "./components/Container";
 import Navbar from "./components/Navbar";
 
 const App = () => {
   return (
     <>
       <Navbar />
-      <div className="">
-        <Outlet />
-      </div>
+      <Container>
+        <div className="">
+          <Outlet />
+        </div>
+      </Container>
     </>
   );
 };

@@ -1,0 +1,172 @@
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
+import type { Book } from "@/types/bookTypes";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Calendar } from "./ui/calendar";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./ui/form";
+import { Input } from "./ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+
+const formSchema = z.object({
+  title: z
+    .string()
+    .min(1, { message: "Title is required and cannot be empty" }),
+  quantity: z
+    .number()
+    .min(1, { message: "Quantity is required and cannot be 0 or empty" }),
+  dueDate: z
+    .date()
+    .nullable()
+    .refine((value) => value !== null, { message: "Select valid date" }),
+  // z.date({error:issue=> issue.input === undefined? "Required": "Invalid date"}).safeParse(new Date()),
+  // .min(1, { message: "Quantity is required and cannot be 0 or empty" }),
+  bookId: z.string(),
+});
+
+export function BorrowModal({ book }: { book: Book }) {
+  const [open, setOpen] = useState(false);
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: book.title,
+      quantity: 0,
+      dueDate: null,
+      bookId: book._id,
+    },
+  });
+
+  const onSubmitHandler = (data: z.infer<typeof formSchema>) => {
+    console.log("Submitted Data:", data);
+
+    form.reset();
+    setOpen(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button disabled={!book.available} variant="default">
+          Borrow
+        </Button>
+      </DialogTrigger>
+
+      <DialogContent className="sm:max-w-[425px] overflow-auto">
+        <DialogHeader>
+          <DialogTitle>Borrow A Book</DialogTitle>
+          <DialogDescription>
+            Fill the form to add a new borrow.
+          </DialogDescription>
+        </DialogHeader>
+
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmitHandler)}
+            className="space-y-4"
+          >
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input disabled placeholder="Enter book title" {...field} />
+                  </FormControl>
+                  <FormMessage className="text-red-500 text-xs" />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="quantity"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Quantity</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Enter number of quantity"
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-500 text-xs" />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="dueDate"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Date of birth</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            " pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-auto p-0 bg-muted"
+                      align="start"
+                    >
+                      <Calendar
+                        mode="single"
+                        selected={field.value ? field.value : undefined}
+                        onSelect={field.onChange}
+                        disabled={(date) =>
+                          date > new Date() || date < new Date("1900-01-01")
+                        }
+                        captionLayout="dropdown"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button type="submit" className="w-full mt-4">
+              Borrow Book
+            </Button>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}

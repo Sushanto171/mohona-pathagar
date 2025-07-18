@@ -1,5 +1,5 @@
 import App from "@/App";
-import BookPage from "@/pages/book/BookPage";
+import BookPage from "@/pages/book/BooksPage";
 import BorrowSummaryPage from "@/pages/borrow-summery/BorrowSummaryPage";
 import { createBrowserRouter } from "react-router";
 
