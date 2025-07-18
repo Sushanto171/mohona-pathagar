@@ -3,6 +3,7 @@ import { AddBookModal } from "@/components/AddBookModal";
 import { BookDeleteModal } from "@/components/BookDeleteModal";
 import { BorrowModal } from "@/components/BorrowModal";
 import { UpdateBookModal } from "@/components/UpdateBookModal";
+import BookDetailsPage from "@/pages/book/BookDetails";
 import BookPage from "@/pages/book/BooksPage";
 import BorrowSummaryPage from "@/pages/borrow-summery/BorrowSummaryPage";
 import { createBrowserRouter } from "react-router";
@@ -37,6 +38,10 @@ export const routes = createBrowserRouter([
       {
         path: "/books",
         Component: BookPage,
+      },
+      {
+        path: "/books/:id",
+        Component: BookDetailsPage,
       },
       {
         path: "/borrow-summary",
