@@ -6,7 +6,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useUpdateBookMutation } from "@/redux/api/book/bookApi";
+import { updateBookSelector } from "@/redux/features/book/bookSlice";
 import { useAppSelector } from "@/redux/hooks";
+import { getErrorMessage, toastMessage } from "@/utils/helper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -31,9 +34,9 @@ import {
   SelectValue,
 } from "./ui/select";
 import { Textarea } from "./ui/textarea";
-import { updateBookSelector } from "@/redux/features/book/bookSlice";
 
 const formSchema = z.object({
+  _id: z.string(),
   title: z
     .string()
     .min(1, { message: "Title is required and cannot be empty" }),
@@ -50,16 +53,18 @@ const formSchema = z.object({
     .refine((value) => value !== null, { message: "Genre is required" }),
   isbn: z.string().min(1, { message: "ISBN is required and cannot be empty" }),
   description: z.string().optional(),
-  copies: z.number().min(1, { message: "Copies must be at least 1" }),
+  copies: z.number().min(0, { message: "Copies must be at least 1" }),
 });
 
 export function UpdateBookModal() {
   const book = useAppSelector(updateBookSelector);
+  const [updateBook, { isLoading }] = useUpdateBookMutation();
   const navigate = useNavigate();
   const [open, setOpen] = useState(true);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      _id: book._id,
       title: book.title,
       author: book.author,
       genre: book.genre,
@@ -70,11 +75,17 @@ export function UpdateBookModal() {
     },
   });
 
-  const onSubmitHandler = (data: z.infer<typeof formSchema>) => {
-    console.log("Updated Data:", data);
+  const onSubmitHandler = async (data: z.infer<typeof formSchema>) => {
+    try {
+      const res = await updateBook(data).unwrap();
+      toastMessage("success", res.message);
+      if (open) return navigate("/");
 
-    form.reset();
-    if (open) return navigate("/");
+      form.reset();
+    } catch (error) {
+      const err = getErrorMessage(error);
+      toastMessage(err === "DuplicateKey" ? "warn" : "error", err);
+    }
   };
 
   const handleModal = () => {
@@ -209,7 +220,7 @@ export function UpdateBookModal() {
             />
 
             <Button type="submit" className="w-full mt-4">
-              Update Book
+              Update Book {isLoading ? "..." : ""}
             </Button>
           </form>
         </Form>

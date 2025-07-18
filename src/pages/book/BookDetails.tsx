@@ -1,53 +1,51 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useGetBookByIdQuery } from "@/redux/api/book/bookApi";
+import { getBookSelector, updateBook } from "@/redux/features/book/bookSlice";
+import { createBorrow } from "@/redux/features/borrow/borrowSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Link, useParams } from "react-router";
 
-// Dummy data for preview
-const dummyBook = {
-  id: "1",
-  title: "Clean Code",
-  author: "Robert C. Martin",
-  genre: "Programming",
-  isbn: "978-0132350884",
-  description: "A Handbook of Agile Software Craftsmanship.",
-  copies: 5,
-  available: true,
-};
-
 const BookDetailsPage = () => {
-  const { id } = useParams(); // can be used to fetch the book by ID
-  console.log(id);
-  const book = dummyBook; // Replace with fetched data via RTK Query
-
+  const { _id } = useAppSelector(getBookSelector);
+  const { id } = useParams();
+  const { isLoading, data: book } = useGetBookByIdQuery(id || _id);
+  const dispatch = useAppDispatch()
+  if (isLoading)
+    return (
+      <div>
+        <p>Loading...</p>
+      </div>
+    );
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl text-primary">{book.title}</CardTitle>
+          <CardTitle className="text-2xl text-primary">{book!.title}</CardTitle>
         </CardHeader>
         <Separator />
         <CardContent className="space-y-4">
           <p>
-            <span className="font-semibold">Author:</span> {book.author}
+            <span className="font-semibold">Author:</span> {book!.author}
           </p>
           <p>
-            <span className="font-semibold">Genre:</span> {book.genre}
+            <span className="font-semibold">Genre:</span> {book!.genre}
           </p>
           <p>
-            <span className="font-semibold">ISBN:</span> {book.isbn}
+            <span className="font-semibold">ISBN:</span> {book!.isbn}
           </p>
           <p>
             <span className="font-semibold">Description:</span>{" "}
-            {book.description}
+            {book!.description}
           </p>
           <p>
             <span className="font-semibold">Copies Available:</span>{" "}
-            {book.copies}
+            {book!.copies}
           </p>
           <p>
             <span className="font-semibold">Status:</span>{" "}
-            {book.available ? (
+            {book!.available ? (
               <span className="text-green-600">Available</span>
             ) : (
               <span className="text-red-500">Unavailable</span>
@@ -55,13 +53,13 @@ const BookDetailsPage = () => {
           </p>
 
           <div className="flex gap-2 mt-4">
-            <Link to={`/borrow/${book.id}`}>
-              <Button variant="default" disabled={!book.available}>
+            <Link to={`/borrow/${book!._id}`}>
+              <Button onClick={()=>dispatch(createBorrow(book!))} variant="default" disabled={!book!.available}>
                 Borrow
               </Button>
             </Link>
-            <Link to={`/edit-book/${book.id}`}>
-              <Button variant="outline">Edit</Button>
+            <Link to={`/edit-book/${book!._id}`}>
+              <Button onClick={()=>dispatch(updateBook(book!))} variant="outline">Edit</Button>
             </Link>
             <Link to="/books">
               <Button variant="secondary">Back to List</Button>

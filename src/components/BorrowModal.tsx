@@ -7,7 +7,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import type { Book } from "@/types/bookTypes";
+import { createBorrowSelector } from "@/redux/features/borrow/borrowSlice";
+import { useAppSelector } from "@/redux/hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
@@ -43,18 +44,8 @@ const formSchema = z.object({
   bookId: z.string(),
 });
 
-const book: Book = {
-  title: "Atomic Habits",
-  author: "James Clear",
-  genre: "FANTASY",
-  isbn: "978-0735211292",
-  copies: 0,
-  available: false,
-  description: "",
-  _id: "s",
-};
-
 export function BorrowModal() {
+  const book = useAppSelector(createBorrowSelector);
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();
   const form = useForm<z.infer<typeof formSchema>>({

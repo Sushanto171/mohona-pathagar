@@ -6,6 +6,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useCreateBookMutation } from "@/redux/api/book/bookApi";
+import { getErrorMessage, toastMessage } from "@/utils/helper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -53,6 +55,7 @@ const formSchema = z.object({
 
 export function AddBookModal() {
   const navigate = useNavigate();
+  const [createBook, { isLoading }] = useCreateBookMutation();
   const [open, setOpen] = useState(true);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -67,17 +70,24 @@ export function AddBookModal() {
     },
   });
 
-  const onSubmitHandler = (data: z.infer<typeof formSchema>) => {
+  const onSubmitHandler = async (data: z.infer<typeof formSchema>) => {
     console.log("Submitted Data:", data);
-
-    form.reset();
-    setOpen(false);
+    try {
+      const res = await createBook(data).unwrap();
+      toastMessage("success", res.message);
+      form.reset();
+      setOpen(false);
+      navigate("/");
+    } catch (error) {
+      const err = getErrorMessage(error);
+      toastMessage("error", err);
+    }
   };
 
-  const handleModal=()=>{
-    setOpen(!open)
-    navigate("/")
-  }
+  const handleModal = () => {
+    setOpen(!open);
+    navigate("/");
+  };
 
   return (
     <Dialog open={open} onOpenChange={handleModal}>
@@ -206,7 +216,7 @@ export function AddBookModal() {
             />
 
             <Button type="submit" className="w-full mt-4">
-              Add Book
+              Add Book {isLoading ? "..." : ""}
             </Button>
           </form>
         </Form>

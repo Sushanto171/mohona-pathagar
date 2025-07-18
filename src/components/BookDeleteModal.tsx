@@ -8,19 +8,29 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useDeleteBookMutation } from "@/redux/api/book/bookApi";
 import { deleteBookSelector } from "@/redux/features/book/bookSlice";
 import { useAppSelector } from "@/redux/hooks";
+import { getErrorMessage, toastMessage } from "@/utils/helper";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
 export function BookDeleteModal() {
   const book = useAppSelector(deleteBookSelector);
+  const [deleteBook, { isLoading }] = useDeleteBookMutation();
   const navigate = useNavigate();
   const [open, setOpen] = useState(true);
-  const deleteHandler = () => {
+  const deleteHandler = async () => {
+    try {
+      const res = await deleteBook(book).unwrap();
+      toastMessage("success", res.message);
+      navigate("/");
+      setOpen(false);
+    } catch (error) {
+      const err = getErrorMessage(error);
+      toastMessage("error", err);
+    }
     console.log(book);
-    navigate("/");
-    setOpen(false);
   };
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
@@ -39,7 +49,7 @@ export function BookDeleteModal() {
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction onClick={() => deleteHandler()}>
-            Continue
+            Continue {isLoading ? "..." : ""}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

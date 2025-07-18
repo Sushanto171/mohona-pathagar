@@ -4,10 +4,12 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 type UpdateBook = Book;
 type DeleteBook = { _id: string };
+type GetBook = DeleteBook;
 
 interface InitialState {
   updateBook: UpdateBook;
   deleteBook: DeleteBook;
+  getBook: GetBook;
 }
 
 const initialState: InitialState = {
@@ -24,6 +26,9 @@ const initialState: InitialState = {
   deleteBook: {
     _id: "",
   },
+  getBook: {
+    _id: "",
+  },
 };
 
 export const bookSlice = createSlice({
@@ -36,9 +41,13 @@ export const bookSlice = createSlice({
     deleteBook: (state, action: PayloadAction<DeleteBook>) => {
       state.deleteBook = action.payload;
     },
+    getBook: (state, action: PayloadAction<GetBook>) => {
+      state.getBook = action.payload;
+    },
   },
 });
 
-export const { deleteBook, updateBook } = bookSlice.actions;
+export const { deleteBook, updateBook, getBook } = bookSlice.actions;
 export const updateBookSelector = (state: RootSate) => state.book.updateBook;
 export const deleteBookSelector = (state: RootSate) => state.book.deleteBook;
+export const getBookSelector = (state: RootSate) => state.book.getBook;
