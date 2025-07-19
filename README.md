@@ -16,6 +16,35 @@ It provides a complete solution for managing books, borrowing, and viewing summa
 
 ---
 
+## ✅ Core Features
+
+* 📘 **Book Management (CRUD)**
+* 🔍 **Book Details View**
+* 🛒 **Borrow Books with Quantity & Due Date**
+* 📊 **Borrow Summary with Total Borrowed**
+* 📚 **Pagination on Books List**
+* 🌙 **Dark & Light Mode Toggle**
+* ⚡ **Optimistic UI Updates**
+* 📨 **Toast Notifications for Actions**
+* 📱 **Responsive Design**
+
+---
+
+## 🎯 My Challenge
+
+I challenged myself to avoid **props drilling** and instead fully explore:
+
+* 🔄 **Redux Local State + Remote API State (RTK Query)**
+* 📚 **Deep Redux Ecosystem Understanding**
+
+This helped me:
+
+* Improve state management consistency
+* Keep the UI predictable and scalable
+* Avoid cumbersome prop-passing across components
+
+---
+
 ## 📦 Project Structure
 
 ```
@@ -39,34 +68,6 @@ It provides a complete solution for managing books, borrowing, and viewing summa
 ```
 
 ---
-
-## 🎨 Color Scheme
-
-### ☀️ Light Mode
-
-| Token        | Color     | Usage                      |
-| ------------ | --------- | -------------------------- |
-| `primary`    | `#8B3F00` | Primary actions, headings  |
-| `accent`     | `#F4A261` | Highlights, buttons, links |
-| `text`       | `#5C2A00` | Main text color            |
-| `secondary`  | `#BC6C25` | Borders, secondary text    |
-| `background` | `#FFFFFF` | Background color           |
-| `surface`    | `#FDF7F1` | Cards & surfaces           |
-
-### 🌙 Dark Mode
-
-| Token        | Color     | Usage            |
-| ------------ | --------- | ---------------- |
-| `primary`    | `#FFB86B` | Primary actions  |
-| `accent`     | `#FF7E5F` | Accent, links    |
-| `text`       | `#F4F4F4` | Text color       |
-| `secondary`  | `#A97142` | Secondary text   |
-| `background` | `#121212` | Main background  |
-| `surface`    | `#1E1E1E` | Cards & surfaces |
-
-
----
-
 
 ## 📑 Application Pages
 
@@ -137,35 +138,6 @@ Summary of all borrowed books with total quantity.
 
 ---
 
-## ✅ Core Features
-
-* 📘 **Book Management (CRUD)**
-* 🔍 **Book Details View**
-* 🛒 **Borrow Books with Quantity & Due Date**
-* 📊 **Borrow Summary with Total Borrowed**
-* 📚 **Pagination on Books List**
-* 🌙 **Dark & Light Mode Toggle**
-* ⚡ **Optimistic UI Updates**
-* 📨 **Toast Notifications for Actions**
-* 📱 **Responsive Design**
-
----
-
-## 🎯 My Challenge
-
-I challenged myself to avoid **props drilling** and instead fully explore:
-
-* 🔄 **Redux Local State + Remote API State (RTK Query)**
-* 📚 **Deep Redux Ecosystem Understanding**
-
-This helped me:
-
-* Improve state management consistency
-* Keep the UI predictable and scalable
-* Avoid cumbersome prop-passing across components
-
----
-
 ## 🚀 Getting Started
 
 ```bash
@@ -192,7 +164,7 @@ npm run dev
 
 ---
 
-> **Developed with ❤️ by Sushanto Kumar**
+> **Developed with ❤️ by Sushanto Kumar** \n
 > *Read, Borrow, Grow*
 
 ---
