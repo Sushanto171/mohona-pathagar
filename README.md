@@ -164,7 +164,7 @@ npm run dev
 
 ---
 
-> **Developed with ❤️ by Sushanto Kumar** \n
+> **Developed with ❤️ by Sushanto Kumar** <br/>
 > *Read, Borrow, Grow*
 
 ---
