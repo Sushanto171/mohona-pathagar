@@ -30,7 +30,6 @@ export function BookDeleteModal() {
       const err = getErrorMessage(error);
       toastMessage("error", err);
     }
-    console.log(book);
   };
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>

@@ -71,7 +71,6 @@ export function AddBookModal() {
   });
 
   const onSubmitHandler = async (data: z.infer<typeof formSchema>) => {
-    console.log("Submitted Data:", data);
     try {
       const res = await createBook(data).unwrap();
       toastMessage("success", res.message);

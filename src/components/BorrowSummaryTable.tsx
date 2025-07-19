@@ -1,42 +1,63 @@
+import { useGetBorrowQuery } from "@/redux/api/borrow/borrowApi";
 import type { BorrowSummary } from "@/types/borrowTypes";
-
-const dummyBorrowSummary: BorrowSummary[] = [
-  {
-    id: "1",
-    title: "Clean Code",
-    isbn: "978-0132350884",
-    totalBorrowed: 10,
-  },
-  {
-    id: "2",
-    title: "Atomic Habits",
-    isbn: "978-0735211292",
-    totalBorrowed: 7,
-  },
-];
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
+import LoadingSkeleton from "./LoadingSkeleton";
+import { Button } from "./ui/button";
 
 const BorrowSummaryTable = () => {
+  const navigate = useNavigate();
+  const { isLoading, data: summaries } = useGetBorrowQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
+  });
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  if (isLoading) return <LoadingSkeleton title={["Book Title", "ISBN", "Total Borrowed"]}numberOfRow={8} />
+
   return (
-    <div className="overflow-x-auto rounded-md shadow">
-      <table className="min-w-full bg-white dark:bg-muted border border-gray-200 dark:border-gray-700">
-        <thead className="bg-gray-100 dark:bg-gray-800">
-          <tr>
-            <th className="px-4 py-2 text-left">Book Title</th>
-            <th className="px-4 py-2 text-left">ISBN</th>
-            <th className="px-4 py-2 text-center">Total Borrowed</th>
-          </tr>
-        </thead>
-        <tbody>
-          {dummyBorrowSummary.map((summary) => (
-            <tr key={summary.id} className="border-t dark:border-gray-700">
-              <td className="px-4 py-2">{summary.title}</td>
-              <td className="px-4 py-2">{summary.isbn}</td>
-              <td className="px-4 py-2 text-center">{summary.totalBorrowed}</td>
+    <>
+      <Button
+        onClick={() => navigate(-1)}
+        className="mb-4"
+      >
+        ← Back
+      </Button>
+
+      <div className="overflow-x-auto rounded-md shadow">
+        <table className="min-w-full bg-white dark:bg-muted border border-gray-200 dark:border-gray-700">
+          <thead className="bg-gray-100 dark:bg-gray-800">
+            <tr className="grid grid-cols-3 justify-between">
+              <th className="px-4 py-2 text-center">Book Title</th>
+              <th className="px-4 py-2 text-center">ISBN</th>
+              <th className="px-4 py-2 text-center">Total Borrowed</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {!isLoading && (summaries as BorrowSummary[]).length === 0 && (
+              <tr>
+                <td colSpan={3} className="text-center py-4">
+                  No borrow summary available.
+                </td>
+              </tr>
+            )}
+            {!isLoading &&
+              (summaries as BorrowSummary[]).map((summary, i) => (
+                <tr key={i} className="border-t dark:border-gray-700">
+                  <td className="px-4 py-2">{summary.book.title}</td>
+                  <td className="px-4 py-2">{summary.book.isbn}</td>
+                  <td className="px-4 py-2 text-center">
+                    {summary.totalQuantity}
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 };
 

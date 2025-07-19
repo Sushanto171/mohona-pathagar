@@ -6,10 +6,12 @@ import {
 } from "@/redux/features/book/bookSlice";
 import { createBorrow } from "@/redux/features/borrow/borrowSlice";
 import { useAppDispatch } from "@/redux/hooks";
+import type { Book } from "@/types/bookTypes";
 import { getErrorMessage, toastMessage } from "@/utils/helper";
 import { PencilIcon } from "lucide-react";
 import { Link } from "react-router";
 import { Button } from "./ui/button";
+import LoadingSkeleton from "./LoadingSkeleton";
 
 const BookTable = () => {
   const dispatch = useAppDispatch();
@@ -20,6 +22,7 @@ const BookTable = () => {
     error,
   } = useGetBooksQuery(undefined, {
     refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
   });
   if (isError) {
     const err = getErrorMessage(error);
@@ -27,28 +30,32 @@ const BookTable = () => {
   }
   if (isLoading)
     return (
-      <div>
-        <p>Loading...</p>
-      </div>
+   <LoadingSkeleton title={["Title", "Author", "Genre", "ISBN", "Copies", "Availability","Actions"]} numberOfRow={8} />
     );
-  console.log(books);
   return (
     <div className="overflow-x-auto rounded-md shadow">
       <table className="min-w-full bg-white dark:bg-muted border border-gray-200 dark:border-gray-700">
         <thead className="bg-gray-100 dark:bg-gray-800">
-          <tr>
-            <th className="px-4 py-2 text-left">Title</th>
-            <th className="px-4 py-2 text-left">Author</th>
-            <th className="px-4 py-2 text-left">Genre</th>
-            <th className="px-4 py-2 text-left">ISBN</th>
-            <th className="px-4 py-2 text-center">Copies</th>
-            <th className="px-4 py-2 text-center">Availability</th>
-            <th className="px-4 py-2 text-center">Actions</th>
+          <tr >
+            <th className="px-4 py-2 text-center border">Title</th>
+            <th className="px-4 py-2 text-center border">Author</th>
+            <th className="px-4 py-2 text-center border">Genre</th>
+            <th className="px-4 py-2 text-center border">ISBN</th>
+            <th className="px-4 py-2 text-center border">Copies</th>
+            <th className="px-4 py-2 text-center border">Availability</th>
+            <th className="px-4 py-2 text-center border">Actions</th>
           </tr>
         </thead>
         <tbody>
+          {!isLoading && (books as Book[]).length === 0 && (
+            <tr>
+              <td colSpan={3} className="text-center py-4">
+                No borrow summary available.
+              </td>
+            </tr>
+          )}
           {!isLoading &&
-            books!.map((book) => (
+            (books as Book[]).map((book) => (
               <tr key={book._id} className="border-t dark:border-gray-700">
                 <td className="px-4 py-2 whitespace-normal max-w-44">
                   {book.title}

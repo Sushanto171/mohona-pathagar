@@ -7,8 +7,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { useGetBooksQuery } from "@/redux/api/book/bookApi";
+import { useCreateBorrowMutation } from "@/redux/api/borrow/borrowApi";
 import { createBorrowSelector } from "@/redux/features/borrow/borrowSlice";
 import { useAppSelector } from "@/redux/hooks";
+import { getErrorMessage, toastMessage } from "@/utils/helper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
@@ -39,12 +42,12 @@ const formSchema = z.object({
     .date()
     .nullable()
     .refine((value) => value !== null, { message: "Select valid date" }),
-  // z.date({error:issue=> issue.input === undefined? "Required": "Invalid date"}).safeParse(new Date()),
-  // .min(1, { message: "Quantity is required and cannot be 0 or empty" }),
-  bookId: z.string(),
+  book: z.string(),
 });
 
 export function BorrowModal() {
+  const [createBorrow, { isLoading }] = useCreateBorrowMutation();
+  const { refetch } = useGetBooksQuery(undefined);
   const book = useAppSelector(createBorrowSelector);
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();
@@ -54,16 +57,25 @@ export function BorrowModal() {
       title: book.title,
       quantity: 0,
       dueDate: null,
-      bookId: book._id,
+      book: book._id,
     },
   });
 
-  const onSubmitHandler = (data: z.infer<typeof formSchema>) => {
-    console.log("Submitted Data:", data);
-
-    form.reset();
-    setOpen(false);
-    navigate("/");
+  const onSubmitHandler = async (data: z.infer<typeof formSchema>) => {
+    try {
+      const res = await createBorrow(data).unwrap();
+      toastMessage("success", res.message);
+      form.reset();
+      setOpen(false);
+      refetch();
+      navigate("/borrow-summary");
+    } catch (error) {
+      const err = getErrorMessage(error);
+      toastMessage(
+        err === "Insufficient Number of Copies" ? "warn" : "error",
+        err
+      );
+    }
   };
 
   const handleModal = () => {
@@ -162,7 +174,7 @@ export function BorrowModal() {
             />
 
             <Button type="submit" className="w-full mt-4">
-              Borrow Book
+              Borrow Book {isLoading ? "..." : ""}
             </Button>
           </form>
         </Form>
