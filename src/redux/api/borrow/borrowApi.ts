@@ -5,8 +5,8 @@ export const borrowApi = createApi({
   reducerPath: "borrowApi",
   tagTypes: ["Borrow"],
   baseQuery: fetchBaseQuery({
-    // baseUrl: "https://mohona-pathagar-server.vercel.app/api",
-    baseUrl: "http://localhost:5000/api",
+    baseUrl: "https://mohona-pathagar-server.vercel.app/api",
+    // baseUrl: "http://localhost:5000/api",
   }),
   endpoints: (builder) => ({
     getBorrow: builder.query({
@@ -14,7 +14,7 @@ export const borrowApi = createApi({
       transformResponse: (res: { data: BorrowSummary[] }) => res.data,
     }),
     createBorrow: builder.mutation({
-      query: (body ) => ({
+      query: (body) => ({
         url: "/borrow",
         method: "POST",
         body,

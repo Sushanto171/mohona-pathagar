@@ -1,7 +1,7 @@
 import { useGetBorrowQuery } from "@/redux/api/borrow/borrowApi";
 import type { BorrowSummary } from "@/types/borrowTypes";
 import { useEffect } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import LoadingSkeleton from "./LoadingSkeleton";
 import { Button } from "./ui/button";
 
@@ -30,9 +30,9 @@ const BorrowSummaryTable = () => {
       <div className="overflow-x-auto rounded-md shadow">
         <table className="min-w-full bg-white dark:bg-muted border border-gray-200 dark:border-gray-700">
           <thead className="bg-gray-100 dark:bg-gray-800">
-            <tr className="grid grid-cols-3 justify-between">
+            <tr >
               <th className="px-4 py-2 text-center">Book Title</th>
-              <th className="px-4 py-2 text-center">ISBN</th>
+              <th className="px-4 py-2 text-left">ISBN</th>
               <th className="px-4 py-2 text-center">Total Borrowed</th>
             </tr>
           </thead>
@@ -47,7 +47,11 @@ const BorrowSummaryTable = () => {
             {!isLoading &&
               (summaries as BorrowSummary[]).map((summary, i) => (
                 <tr key={i} className="border-t dark:border-gray-700">
-                  <td className="px-4 py-2">{summary.book.title}</td>
+                  <td className="px-4 py-2">
+                    <Link className="hover:underline" to={`/books/${summary.book._id}`}>
+                    {summary.book.title}
+                    </Link>
+                    </td>
                   <td className="px-4 py-2">{summary.book.isbn}</td>
                   <td className="px-4 py-2 text-center">
                     {summary.totalQuantity}

@@ -5,12 +5,12 @@ export const bookApi = createApi({
   reducerPath: "bookApi",
   tagTypes: ["Post", "Book"],
   baseQuery: fetchBaseQuery({
-    // baseUrl: "https://mohona-pathagar-server.vercel.app/api",
-    baseUrl: "http://localhost:5000/api",
+    baseUrl: "https://mohona-pathagar-server.vercel.app/api",
+    // baseUrl: "http://localhost:5000/api",
   }),
   endpoints: (builder) => ({
     getBooks: builder.query({
-      query: () => "/books",
+      query: ({ page }) => `/books?page=${page}`,
       transformResponse: (response: { data: Book[] }) => response.data,
       transformErrorResponse: (response: { status: string | number }) =>
         response.status,
@@ -19,13 +19,18 @@ export const bookApi = createApi({
           ? result.map((book) => ({ type: "Book", id: book._id }))
           : [{ type: "Book", id: "" }],
     }),
+    countBookNum: builder.query({
+      query: () => "/books/countBook",
+    }),
     updateBook: builder.mutation({
       query: ({ _id, ...book }) => ({
         url: `/books/${_id}`,
         method: "PUT",
         body: book,
       }),
-      invalidatesTags: (result, error, { _id }) => [{ type: "Book", id: _id }],
+      invalidatesTags: (_result, _error, { _id }) => [
+        { type: "Book", id: _id },
+      ],
     }),
     createBook: builder.mutation({
       query: ({ ...book }) => ({
@@ -57,4 +62,5 @@ export const {
   useCreateBookMutation,
   useDeleteBookMutation,
   useGetBookByIdQuery,
+  useCountBookNumQuery,
 } = bookApi;

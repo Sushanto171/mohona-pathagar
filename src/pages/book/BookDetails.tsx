@@ -11,7 +11,7 @@ const BookDetailsPage = () => {
   const { _id } = useAppSelector(getBookSelector);
   const { id } = useParams();
   const { isLoading, data: book } = useGetBookByIdQuery(id || _id);
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
   if (isLoading)
     return (
       <div>
@@ -53,13 +53,29 @@ const BookDetailsPage = () => {
           </p>
 
           <div className="flex gap-2 mt-4">
-            <Link to={`/borrow/${book!._id}`}>
-              <Button onClick={()=>dispatch(createBorrow(book!))} variant="default" disabled={!book!.available}>
+            <Link
+              to={book!.available ? `/borrow/${book!._id}` : ""}
+              className={
+                book!.available ? "cursor-pointer" : "cursor-not-allowed"
+              }
+            >
+              <Button
+                onClick={() =>
+                  dispatch(createBorrow({ _id: book!._id, title: book!.title }))
+                }
+                disabled={!book!.available}
+                variant="default"
+              >
                 Borrow
               </Button>
             </Link>
             <Link to={`/edit-book/${book!._id}`}>
-              <Button onClick={()=>dispatch(updateBook(book!))} variant="outline">Edit</Button>
+              <Button
+                onClick={() => dispatch(updateBook(book!))}
+                variant="outline"
+              >
+                Edit
+              </Button>
             </Link>
             <Link to="/books">
               <Button variant="secondary">Back to List</Button>

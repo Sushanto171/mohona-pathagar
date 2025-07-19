@@ -1,4 +1,5 @@
 type IBook = {
+  _id: string,
   title: string;
   isbn: string;
 };

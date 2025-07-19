@@ -1,4 +1,7 @@
-import { useGetBooksQuery } from "@/redux/api/book/bookApi";
+import {
+  useCountBookNumQuery,
+  useGetBooksQuery,
+} from "@/redux/api/book/bookApi";
 import {
   deleteBook,
   getBook,
@@ -8,35 +11,61 @@ import { createBorrow } from "@/redux/features/borrow/borrowSlice";
 import { useAppDispatch } from "@/redux/hooks";
 import type { Book } from "@/types/bookTypes";
 import { getErrorMessage, toastMessage } from "@/utils/helper";
-import { PencilIcon } from "lucide-react";
+import { Eye, PencilIcon } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router";
-import { Button } from "./ui/button";
 import LoadingSkeleton from "./LoadingSkeleton";
+import { PaginationB } from "./Pagination";
+import { Button } from "./ui/button";
 
 const BookTable = () => {
+  const [page, setPage] = useState(1);
+  const {
+    data: totalBooks,
+    isLoading: isCountLoading,
+    isError: isCountError,
+    error: countError,
+  } = useCountBookNumQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
+  });
   const dispatch = useAppDispatch();
   const {
     isError,
     isLoading,
     data: books,
     error,
-  } = useGetBooksQuery(undefined, {
-    refetchOnMountOrArgChange: true,
-    refetchOnFocus: true,
-  });
-  if (isError) {
-    const err = getErrorMessage(error);
-    return toastMessage("error", err);
+  } = useGetBooksQuery(
+    { page },
+    {
+      refetchOnMountOrArgChange: true,
+      refetchOnFocus: true,
+    }
+  );
+  if (isError || isCountError) {
+    const err = getErrorMessage(error || countError);
+    toastMessage("error", err);
   }
-  if (isLoading)
+  if (isLoading || isCountLoading)
     return (
-   <LoadingSkeleton title={["Title", "Author", "Genre", "ISBN", "Copies", "Availability","Actions"]} numberOfRow={8} />
+      <LoadingSkeleton
+        title={[
+          "Title",
+          "Author",
+          "Genre",
+          "ISBN",
+          "Copies",
+          "Availability",
+          "Actions",
+        ]}
+        numberOfRow={8}
+      />
     );
   return (
     <div className="overflow-x-auto rounded-md shadow">
       <table className="min-w-full bg-white dark:bg-muted border border-gray-200 dark:border-gray-700">
         <thead className="bg-gray-100 dark:bg-gray-800">
-          <tr >
+          <tr>
             <th className="px-4 py-2 text-center border">Title</th>
             <th className="px-4 py-2 text-center border">Author</th>
             <th className="px-4 py-2 text-center border">Genre</th>
@@ -50,17 +79,16 @@ const BookTable = () => {
           {!isLoading && (books as Book[]).length === 0 && (
             <tr>
               <td colSpan={3} className="text-center py-4">
-                No borrow summary available.
+                No borrow book available.
               </td>
             </tr>
           )}
           {!isLoading &&
+            !isError &&
             (books as Book[]).map((book) => (
               <tr key={book._id} className="border-t dark:border-gray-700">
-                <td className="px-4 py-2 whitespace-normal max-w-44">
-                  {book.title}
-                </td>
-                <td className="px-4 py-2 max-w-44 truncate">{book.author}</td>
+                <td className="px-4 py-2  max-w-56 truncate">{book.title}</td>
+                <td className="px-4 py-2 max-w-32 truncate">{book.author}</td>
                 <td className="px-4 py-2 max-w-44">{book.genre}</td>
                 <td className="px-4 py-2 truncate max-w-40">{book.isbn}</td>
                 <td className="px-4 py-2 text-center">{book.copies}</td>
@@ -71,18 +99,18 @@ const BookTable = () => {
                     <span className="text-red-500">Unavailable</span>
                   )}
                 </td>
-                <td className="px-4 py-2 text-center space-x-2 flex">
+                <td className="px-4 py-2 text-center h-full  space-x-2 flex justify-center items-center">
                   <Link to={`/books/${book._id}`}>
                     <Button
                       onClick={() => dispatch(getBook({ _id: book._id }))}
-                      variant="secondary"
+                      size={"icon"}
                     >
-                      View
+                      <Eye />
                     </Button>
                   </Link>
                   <Link to={`/edit-book/${book._id}`}>
                     <Button
-                      className=""
+                      size={"icon"}
                       onClick={() => dispatch(updateBook(book))}
                     >
                       <PencilIcon />
@@ -118,6 +146,15 @@ const BookTable = () => {
             ))}
         </tbody>
       </table>
+
+      {totalBooks?.count && (
+        <PaginationB
+          page={page}
+          onPage={setPage}
+          showData={10}
+          totalBook={totalBooks.count}
+        />
+      )}
     </div>
   );
 };
