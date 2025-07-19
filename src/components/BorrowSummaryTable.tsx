@@ -16,21 +16,24 @@ const BorrowSummaryTable = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
-  if (isLoading) return <LoadingSkeleton title={["Book Title", "ISBN", "Total Borrowed"]}numberOfRow={8} />
+  if (isLoading)
+    return (
+      <LoadingSkeleton
+        title={["Book Title", "ISBN", "Total Borrowed"]}
+        numberOfRow={8}
+      />
+    );
 
   return (
     <>
-      <Button
-        onClick={() => navigate(-1)}
-        className="mb-4"
-      >
+      <Button onClick={() => navigate("/")} className="mb-4">
         ← Back
       </Button>
 
       <div className="overflow-x-auto rounded-md shadow">
         <table className="min-w-full bg-white dark:bg-muted border border-gray-200 dark:border-gray-700">
           <thead className="bg-gray-100 dark:bg-gray-800">
-            <tr >
+            <tr>
               <th className="px-4 py-2 text-center">Book Title</th>
               <th className="px-4 py-2 text-left">ISBN</th>
               <th className="px-4 py-2 text-center">Total Borrowed</th>
@@ -48,10 +51,13 @@ const BorrowSummaryTable = () => {
               (summaries as BorrowSummary[]).map((summary, i) => (
                 <tr key={i} className="border-t dark:border-gray-700">
                   <td className="px-4 py-2">
-                    <Link className="hover:underline" to={`/books/${summary.book._id}`}>
-                    {summary.book.title}
+                    <Link
+                      className="hover:underline"
+                      to={`/books/${summary.book._id}`}
+                    >
+                      {summary.book.title}
                     </Link>
-                    </td>
+                  </td>
                   <td className="px-4 py-2">{summary.book.isbn}</td>
                   <td className="px-4 py-2 text-center">
                     {summary.totalQuantity}
